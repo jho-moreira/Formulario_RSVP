@@ -21,5 +21,5 @@ Este projeto consiste em uma solução Full Stack simplificada para gestão de c
 4. O usuário recebe um feedback visual de sucesso na tela sem necessidade de recarregar a página.
 
 ## 👨‍💻 Autor
-Desenvolvido por **[Seu Nome]**
+Desenvolvido por **Jhordane Moreira **
 *Estudante de Pós-graduação em Análise e Desenvolvimento de Sistemas (PUC Minas).*
