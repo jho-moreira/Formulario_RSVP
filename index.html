@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confirmação de Presença - Azul Serenity</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #e2eafc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(145, 166, 201, 0.3);
+        width: 100%;
+        max-width: 600px; /* Aumentado para acomodar 2 colunas */
+        border-top: 8px solid #b1c9ef;
+      }
+      h2 {
+        text-align: center;
+        color: #5b7da1;
+        margin-bottom: 10px;
+      }
+
+      .info {
+        background-color: #f1f5ff;
+        color: #6a8caf;
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 14px;
+        text-align: center;
+        margin-bottom: 20px;
+        border: 1px solid #d1dcf0;
+      }
+
+      /* Campo de Busca */
+      .search-box {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #cedfed;
+        border-radius: 8px;
+        box-sizing: border-box;
+        outline: none;
+        font-size: 15px;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%236a8caf" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>');
+        background-repeat: no-repeat;
+        background-position: 95% center;
+      }
+
+      /* Lista em 2 Colunas */
+      .lista-selecao {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Duas colunas */
+        gap: 10px;
+        max-height: 350px;
+        overflow-y: auto;
+        border: 1px solid #cedfed;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        background-color: #fcfdff;
+      }
+
+      @media (max-width: 480px) {
+        .lista-selecao {
+          grid-template-columns: 1fr;
+        } /* Em celular fica 1 coluna */
+      }
+
+      .item-convidado {
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        border-radius: 5px;
+        transition: background 0.2s;
+      }
+      .item-convidado:hover {
+        background-color: #f1f5ff;
+      }
+
+      .item-convidado input {
+        margin-right: 10px;
+        cursor: pointer;
+        accent-color: #b1c9ef;
+      }
+      .item-convidado label {
+        color: #5b7da1;
+        font-size: 14px;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      button {
+        width: 100%;
+        padding: 14px;
+        background-color: #b1c9ef;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        transition: 0.3s;
+      }
+      button:hover {
+        background-color: #92b4e5;
+      }
+      button:disabled {
+        background-color: #d1dcf0;
+      }
+
+      #sucesso {
+        display: none;
+        text-align: center;
+        color: #5b7da1;
+        padding: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div id="form-content">
+        <h2>Confirmação de Presença</h2>
+        <div class="info">
+          Busque seu nome na lista e selecione para confirmar. ✨
+        </div>
+
+        <input
+          type="text"
+          id="inputBusca"
+          class="search-box"
+          placeholder="Pesquisar seu nome..."
+        />
+
+        <form id="rsvpForm">
+          <div class="lista-selecao" id="listaNomes"></div>
+          <button type="submit" id="btnEnviar">Confirmar Presença</button>
+        </form>
+      </div>
+
+      <div id="sucesso">
+        <h3>🎉 Confirmado!</h3>
+        <p>Agradecemos por confirmar sua presença. Nos vemos em breve!</p>
+      </div>
+    </div>
+
+    <script>
+      // LISTA DE EXEMPLO - Substitua pelos seus 200 nomes
+      const convidados = [
+        "Jhordane Silva",
+        "João Pereira",
+        "Maria Oliveira",
+        "Carlos Souza",
+        "Ana Santos",
+        "Pedro Alcantara",
+        "Beatriz Lima",
+        "Marcos Rocha",
+        "Fernanda Costa",
+        "Ricardo Alves",
+        "Juliana Mello",
+        "Lucas Duarte",
+        "Sônia Braga",
+        "Roberto Carlos",
+        "Ivete Sangalo",
+        // ... adicione todos aqui
+      ];
+
+      const listaContainer = document.getElementById("listaNomes");
+      const inputBusca = document.getElementById("inputBusca");
+
+      // Função para renderizar a lista
+      function renderizarLista(filtro = "") {
+        listaContainer.innerHTML = "";
+        const filtrados = convidados.filter((n) =>
+          n.toLowerCase().includes(filtro.toLowerCase()),
+        );
+
+        filtrados.sort().forEach((nome, index) => {
+          const div = document.createElement("div");
+          div.className = "item-convidado";
+          div.innerHTML = `
+                <input type="checkbox" id="c-${index}" name="selecionados" value="${nome}">
+                <label for="c-${index}">${nome}</label>
+            `;
+          listaContainer.appendChild(div);
+        });
+      }
+
+      // Evento de busca
+      inputBusca.addEventListener("input", (e) =>
+        renderizarLista(e.target.value),
+      );
+
+      // Inicializa a lista
+      renderizarLista();
+
+      const URL_SCRIPT =
+        "https://script.google.com/macros/s/AKfycbyup_-S9wi57gGZ_xUCtiXXlpS_lOyNqES_a4SwLwAOsUHAP26s74FbVg1YWGudVBh-/exec";
+      const form = document.getElementById("rsvpForm");
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const selecionados = Array.from(
+          document.querySelectorAll('input[name="selecionados"]:checked'),
+        ).map((cb) => cb.value);
+
+        if (selecionados.length === 0) {
+          alert("Selecione pelo menos um nome.");
+          return;
+        }
+
+        const btn = document.getElementById("btnEnviar");
+        btn.disabled = true;
+        btn.innerText = "Enviando...";
+
+        const params = new URLSearchParams();
+        params.append("nome", selecionados.join(", "));
+
+        fetch(URL_SCRIPT, {
+          method: "POST",
+          mode: "no-cors",
+          body: params,
+        }).then(() => {
+          document.getElementById("form-content").style.display = "none";
+          document.getElementById("sucesso").style.display = "block";
+        });
+      });
+    </script>
+  </body>
+</html>
